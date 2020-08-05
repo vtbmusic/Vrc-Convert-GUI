@@ -1,4 +1,7 @@
-﻿using Microsoft.Win32;
+﻿using ControlzEx.Standard;
+using MahApps.Metro.Controls;
+using MahApps.Metro.Controls.Dialogs;
+using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;
@@ -23,7 +26,7 @@ namespace Vrc_Lyric_Format_Convert_GUI
     /// <summary>
     /// MainWindow.xaml 的交互逻辑
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : MetroWindow
     {
         private string sourceFormat = "";
         private string jsonIndent = "2";
@@ -62,15 +65,15 @@ namespace Vrc_Lyric_Format_Convert_GUI
             {
                 if (sourceFormat == "")
                 {
-                    MessageBox.Show("你还没有输入完参数呢!怎么跑");
+                    this.ShowMessageAsync("运行失败", "你还没有输入完参数呢!怎么跑");
                 }
                 else if (sourceDirPath == "")
                 {
-                    MessageBox.Show("你还没有输入完参数呢!怎么跑");
+                    this.ShowMessageAsync("运行失败", "你还没有输入完参数呢!怎么跑");
                 }
                 else if (jsonIndent == "")
                 {
-                    MessageBox.Show("你还没有输入完参数呢!怎么跑");
+                    this.ShowMessageAsync("运行失败", "你还没有输入完参数呢!怎么跑");
                 }
                 else
                 {
@@ -83,15 +86,15 @@ namespace Vrc_Lyric_Format_Convert_GUI
             {
                 if (sourceFormat == "")
                 {
-                    MessageBox.Show("你还没有输入完参数呢!怎么跑");
+                    this.ShowMessageAsync("运行失败", "你还没有输入完参数呢!怎么跑");
                 }
                 else if (sourcePath == "")
                 {
-                    MessageBox.Show("你还没有输入完参数呢!怎么跑");
+                    this.ShowMessageAsync("运行失败", "你还没有输入完参数呢!怎么跑");
                 }
                 else if (jsonIndent == "")
                 {
-                    MessageBox.Show("你还没有输入完参数呢!怎么跑");
+                    this.ShowMessageAsync("运行失败", "你还没有输入完参数呢!怎么跑");
                 }
                 else
                 {
@@ -243,7 +246,7 @@ namespace Vrc_Lyric_Format_Convert_GUI
             catch (Exception e)
             {
                 Run.Dispatcher.Invoke(new Action(delegate { Run.IsEnabled = true; Run.Content = "走你!"; }));
-                MessageBox.Show("错误信息:\r\n" + e.Message + "\r\n错误追踪:\r\n" + e.StackTrace, "无法运行脚本");
+                Dispatcher.Invoke(new Action(delegate { this.ShowMessageAsync("无法运行脚本", "错误信息:\r\n" + e.Message + "\r\n错误追踪:\r\n" + e.StackTrace); }));
                 //OutPut.AppendText("无法运行脚本 错误信息:\r\n");
                 //OutPut.AppendText(e.Message);
                 //OutPut.AppendText("\r\n错误追踪:\r\n");
@@ -292,7 +295,7 @@ namespace Vrc_Lyric_Format_Convert_GUI
                             }
                             catch (Exception exx)
                             {
-                                MessageBox.Show("文件将被输出到:" + files[i].FullName + "\r\n错误信息:\r\n" + exx.Message + "\r\n错误追踪:\r\n" + exx.StackTrace, "无法将文件输出到指定目录!");
+                                Dispatcher.Invoke(new Action(delegate { this.ShowMessageAsync("无法将文件输出到指定目录", "文件将被输出到:" + files[i].FullName + "\r\n错误信息:\r\n" + exx.Message + "\r\n错误追踪:\r\n" + exx.StackTrace); }));
                                 isOk = false;
                             }
                         }
@@ -310,7 +313,7 @@ namespace Vrc_Lyric_Format_Convert_GUI
                             }
                             catch (Exception exx)
                             {
-                                MessageBox.Show("文件将被输出到:" + files[i].FullName + "\r\n错误信息:\r\n" + exx.Message + "\r\n错误追踪:\r\n" + exx.StackTrace, "无法将文件输出到指定目录!");
+                                Dispatcher.Invoke(new Action(delegate { this.ShowMessageAsync("输出失败", "部分文件可能没有输出成功"); }));
                                 isOk = false;
                             }
                         }
@@ -319,10 +322,10 @@ namespace Vrc_Lyric_Format_Convert_GUI
 
                     if (isOk)
                     {
-                        MessageBox.Show("文件已输出到:" + outputDirPath, "输出成功!");
+                        Dispatcher.Invoke(new Action(delegate { this.ShowMessageAsync("输出成功", "文件已输出到:" + outputDirPath); }));
                     } else
                     {
-                        MessageBox.Show("部分文件可能没有输出成功", "输出失败!");
+                        Dispatcher.Invoke(new Action(delegate { this.ShowMessageAsync("输出失败", "部分文件可能没有输出成功"); }));
                     }
                     #endregion
                 }
@@ -345,11 +348,11 @@ namespace Vrc_Lyric_Format_Convert_GUI
 
                     if (isOk)
                     {
-                        MessageBox.Show("文件已输出到源目录","输出成功");
+                        Dispatcher.Invoke(new Action(delegate { this.ShowMessageAsync("输出成功", "文件已输出到源目录"); }));
                     }
                     else
                     {
-                        MessageBox.Show("部分文件可能没有输出成功", "输出失败!");
+                        Dispatcher.Invoke(new Action(delegate { this.ShowMessageAsync("输出失败", "部分文件可能没有输出成功"); }));
                     }
                     #endregion
                 }
@@ -362,11 +365,11 @@ namespace Vrc_Lyric_Format_Convert_GUI
                 {
                     if (File.Exists(deOutPutPath))
                     {
-                        MessageBox.Show("文件已输出到:" + deOutPutPath, "输出成功!");
+                        Dispatcher.Invoke(new Action(delegate { this.ShowMessageAsync("输出成功", "文件已输出到:"+deOutPutPath); }));
                     }
                     else
                     {
-                        MessageBox.Show("输出失败! 请尝试手动调用脚本", "输出失败!");
+                        Dispatcher.Invoke(new Action(delegate { this.ShowMessageAsync("输出失败", "请尝试手动调用脚本"); }));
                     }
                 }
                 else if (File.Exists(deOutPutPath))
@@ -374,16 +377,16 @@ namespace Vrc_Lyric_Format_Convert_GUI
                     try
                     {
                         File.Move(deOutPutPath, outputPath);
-                        MessageBox.Show("文件已输出到:" + outputPath,"输出成功");
+                        Dispatcher.Invoke(new Action(delegate { this.ShowMessageAsync("输出成功", "文件已输出到:" + outputPath); }));
                     }
                     catch (Exception a)
                     {
-                        MessageBox.Show("文件将被输出到:" + deOutPutPath + "\r\n错误信息:\r\n" + a.Message + "\r\n错误追踪:\r\n" + a.StackTrace, "无法将文件输出到指定目录!");
+                        Dispatcher.Invoke(new Action(delegate { this.ShowMessageAsync("无法将文件输出到指定目录", "文件将被输出到:" + deOutPutPath + "\r\n错误信息:\r\n" + a.Message + "\r\n错误追踪:\r\n" + a.StackTrace); }));
                     }
                 }
                 else
                 {
-                    MessageBox.Show("输出失败! 请尝试手动调用脚本", "输出失败!");
+                    Dispatcher.Invoke(new Action(delegate { this.ShowMessageAsync("输出失败", "请尝试手动调用脚本"); }));
                 }
                 #endregion
             }
