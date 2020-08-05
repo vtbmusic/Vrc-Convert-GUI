@@ -1,0 +1,19 @@
+﻿<Window x:Class="Vrc_Lyric_Format_Convert_GUI.README"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Vrc_Lyric_Format_Convert_GUI"
+        mc:Ignorable="d"
+        Title="README" Height="450" Width="800" Icon="bitbug_favicon.ico">
+    <ScrollViewer>
+        <StackPanel Margin="5,5,5,0">
+            <TextBlock TextWrapping="Wrap" FontSize="24" Text="ass 轴文件的部分限制"/>
+            <TextBlock TextWrapping="Wrap" FontSize="20" Text="要求日语和中文之间用 \n 分隔，且日语在中文之前。日语和中文各轴一遍的话，目前暂时不支持转换。要求一定要有中文，也就是一定要有 \n。"/>
+            <TextBlock TextWrapping="Wrap" FontSize="24" Text="错误语句：如果尝试转换一个文件的过程中发生错误，会立刻输出错误语句。可能发生的错误有" Margin="0,5,0,0"/>
+            <TextBlock TextWrapping="Wrap" FontSize="20" Text=" - 编码错误。命令行提示 Unrecognized encoding。这意味着此文件不是标准的 utf-8、utf-16-le、或者 gbk 编码格式。出现此问题请发 issue 或组内联系。"/>
+            <TextBlock TextWrapping="Wrap" FontSize="20" Text=" - 转换失败。此提示只会出现在转换 ass 格式轴文件时，且提示一般来说非常清晰，请根据提示检查文件内容。如果无法解决，请组内联系。"/>
+            <TextBlock TextWrapping="Wrap" FontSize="20" Text=" - 其他错误。程序没能处理抛出的异常，直接崩溃退出。出现此问题请发 issue 或组内联系。"/>
+        </StackPanel>
+    </ScrollViewer>
+</Window>
