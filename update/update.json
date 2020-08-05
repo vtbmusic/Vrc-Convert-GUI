@@ -1,0 +1,20 @@
+{
+    "total": 3,
+    "laster":{
+        "version": "v1.3",
+        "log": "添加了检查更新系统",
+        "download": "https://api.misakal.xyz/Software_Update/Vrc_Convert/files/Crc Convert v1.3.zip"
+    },
+    "history":[
+        {
+            "version": "v1.3",
+            "log": "添加了检查更新系统",
+            "download": "https://api.misakal.xyz/Software_Update/Vrc_Convert/files/Crc Convert v1.3.zip"
+        },
+        {
+            "version": "v1.2",
+            "log": "更新 UI 界面\n添加递归模式支持",
+            "download":"https://api.misakal.xyz/Software_Update/Vrc_Convert/files/Crc Convert v1.2.zip"
+        }
+    ]
+}

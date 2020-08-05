@@ -1,25 +1,18 @@
-﻿using ControlzEx.Standard;
+﻿using LitJson;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
 using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using RestSharp;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO.Compression;
+using System.Net;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace Vrc_Lyric_Format_Convert_GUI
 {
@@ -38,6 +31,9 @@ namespace Vrc_Lyric_Format_Convert_GUI
         private bool Recursion = false;
         private string sourceDirPath = "";
         private string outputDirPath = "";
+
+        // 检查更新
+        private string version = "v1.3";
 
         public MainWindow()
         {
@@ -398,6 +394,107 @@ namespace Vrc_Lyric_Format_Convert_GUI
         {
             DirectoryInfo directoryInfo = new DirectoryInfo(path);
             return directoryInfo.GetFiles(ext, SearchOption.AllDirectories);
+        }
+        #endregion
+
+        #region 检查更新
+        private async void CheckUpdateButton_Click(object sender, RoutedEventArgs e)
+        {
+            CheckUpdateButton.IsEnabled = false;
+            CheckUpdateButton.Content = "检查中...";
+            var client = new RestClient("https://api.misakal.xyz");
+            var request = new RestRequest("/Software_Update/Vrc_Convert/getUpdataInfo.php");
+            // var request = new RestRequest("/Software_Update/Vrc_Convert/update.json");
+            var response = client.Get(request);
+            if (response.IsSuccessful)
+            {
+                try
+                {
+                    JsonData jsonData = JsonMapper.ToObject(response.Content);
+                    if (version == (string)jsonData["laster"]["version"])
+                    {
+                        await this.ShowMessageAsync("你已经是最新版本了", "最新版本:" + (string)jsonData["laster"]["version"] + "\r\n本地版本:" + version);
+                    }
+                    else
+                    {
+                        MessageDialogResult result = await this.ShowMessageAsync("发现更新", "最新版本:" + (string)jsonData["laster"]["version"] + "\r\n本地版本" + version + "\r\n更新内容:\r\n" + (string)jsonData["laster"]["log"] + "\r\n是否更新？",
+                            MessageDialogStyle.AffirmativeAndNegative,
+                            new MetroDialogSettings() {
+                                AffirmativeButtonText = "取消",
+                                NegativeButtonText = "更新"
+                            });
+                        if (result == MessageDialogResult.Negative)
+                        {
+                            var progressControl = await this.ShowProgressAsync("正在更新", "下载新版本中...");
+                            new Thread(a =>
+                            {
+                                try
+                                {
+                                    string tempFilePath = "Vrc_Convert_New.zip";
+                                    Stream writer = new FileStream(tempFilePath, FileMode.Create);
+
+                                    ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                                    HttpWebRequest downloadRequest = (HttpWebRequest)WebRequest.Create((string)jsonData["laster"]["download"]);
+                                    HttpWebResponse downloadResponse = (HttpWebResponse)downloadRequest.GetResponse();
+                                    long totalBytes = downloadResponse.ContentLength;
+
+                                    Stream downloadStream = downloadResponse.GetResponseStream();
+                                    long totalDownloadedByte = 0;
+                                    byte[] downloadByte = new byte[1024];
+                                    int osize = downloadStream.Read(downloadByte, 0, (int)downloadByte.Length);
+                                    while (osize > 0)
+                                    {
+                                        totalDownloadedByte = osize + totalDownloadedByte;
+                                        writer.Write(downloadByte, 0, osize);
+                                        osize = downloadStream.Read(downloadByte, 0, (int)downloadByte.Length);
+                                        float downloadProgress = totalDownloadedByte / totalBytes;
+                                        // Dispatcher.Invoke(new Action(delegate { progressControl.SetProgress(downloadProgress); progressControl.SetMessage("下载新版本中... (" + (downloadProgress * 100).ToString() + "%)"); }));
+                                        progressControl.SetProgress(downloadProgress);
+                                        progressControl.SetMessage("下载新版本中... (" + (downloadProgress * 100).ToString() + "%)");
+                                    }
+                                    downloadStream.Close();
+                                    writer.Close();
+
+                                    progressControl.SetMessage("正在释放文件...");
+                                    if (Directory.Exists(Environment.CurrentDirectory + "\\update_cache")) 
+                                    {
+                                        Directory.Delete(Environment.CurrentDirectory + "\\update_cache",true);
+                                    }
+                                    ZipFile.ExtractToDirectory(tempFilePath, Environment.CurrentDirectory+"\\update_cache");
+                                    progressControl.CloseAsync();
+                                    Dispatcher.Invoke(new Action(
+                                        async delegate
+                                        {
+                                            result = await this.ShowMessageAsync("请手动安装更新", "更新已下载完成。请点击 \"确认\" 并将弹出文件夹内容覆盖程序目录。");
+                                            if (result == MessageDialogResult.Affirmative)
+                                            {
+                                                Process.Start("explorer.exe", Environment.CurrentDirectory + "\\update_cache");
+                                                Environment.Exit(0);
+                                            }
+                                        }));
+                                }
+                                catch (Exception downloadException)
+                                {
+                                    progressControl.CloseAsync();
+                                    Dispatcher.Invoke(new Action(delegate { this.ShowMessageAsync("下载失败", "错误信息:\r\n" + downloadException.Message + "\r\n错误追踪:" + downloadException.StackTrace); }));
+                                }
+                            })
+                            { IsBackground = true }.Start();
+                        }
+                    }
+                }
+                catch
+                {
+                    await this.ShowMessageAsync("无法解析更新信息", "服务器返回内容:\r\n" + response.Content);
+                }
+            }
+            else
+            {
+                await this.ShowMessageAsync("无法连接到检查更新服务", "Http 状态代码:" + response.StatusCode.ToString() + "\r\n错误信息:" + response.ErrorMessage + "\r\n错误追踪:" + response.ErrorException);
+            }
+
+            CheckUpdateButton.IsEnabled = true;
+            CheckUpdateButton.Content = "检查更新";
         }
         #endregion
     }

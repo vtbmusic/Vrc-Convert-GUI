@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Vrc_Lyric_Format_Convert_GUI"
         xmlns:mah ="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         mc:Ignorable="d"
-        Title="Vrc Converter - v1.2 有问题请联系组内或开 Issue" Height="600" Width="520">
+        Title="Vrc Converter - v1.3 有问题请联系组内或开 Issue" Height="600" Width="520">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <Grid>
             <Grid.ColumnDefinitions>
@@ -45,7 +45,12 @@
                                 <TextBox x:Name="JsonIndent" FontSize="18" Margin="5,0" Text="2"/>
                             </StackPanel>
                         </GroupBox>
-                        <Button x:Name="README" Content="点击查看说明" Margin="0,5,0,0" Click="README_Click" FontSize="18"/>
+                        <GroupBox>
+                            <StackPanel>
+                                <Button x:Name="README" Content="点击查看说明" Margin="0,5,0,0" Click="README_Click" FontSize="18"/>
+                                <Button x:Name="CheckUpdateButton" Content="检查更新" Margin="0,5,0,0" FontSize="18" Click="CheckUpdateButton_Click"/>
+                            </StackPanel>
+                        </GroupBox>
                     </StackPanel>
                     <Button x:Name="Run" Click="Run_Click" Grid.Row="1" Content="走你!" FontSize="18"/>
                 </Grid>
